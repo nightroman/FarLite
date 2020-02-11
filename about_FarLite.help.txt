@@ -1,0 +1,42 @@
+TOPIC
+    about_FarLite
+
+SHORT DESCRIPTION
+    LiteDB browser in Far Manager
+
+LONG DESCRIPTION
+    Requires:
+    - Far Manager, FarNet, PowerShellFar
+    - Ldbc module https://github.com/nightroman/Ldbc
+
+    FarLite provides the following commands:
+
+        Open-LitePanel
+        Edit-LiteJsonLine
+
+Open-LitePanel
+    This command opens Far Manager panels for browsing LiteDB databases.
+    Panels and features:
+
+        Collections: view, rename, delete collections, open document panels
+        Documents: view, edit, create, delete documents
+
+    Import the module and get help about parameters and features:
+
+        Import-Module FarLite
+        help Open-LitePanel -full
+
+Edit-LiteJsonLine
+    This command helps to edit JSON strings with escaped characters, for
+    example multiline strings, when JSON is opened in the editor. See
+
+        help Edit-LiteJsonLine
+
+    In FarLite JSON editors opened from panels by [F4] or [F7] this command
+    may be invoked by pressing [F4] at the line to be edited.
+
+    The command may be used in other JSON editors but it should be invoked
+    manually, for example from the PowerShellFar command box or using a macro.
+
+SEE ALSO
+    Release Notes https://github.com/nightroman/FarLite/blob/master/Release-Notes.md
