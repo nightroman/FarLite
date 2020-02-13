@@ -3,12 +3,13 @@
 	Shows LiteDB collections and documents.
 
 .Description
-	This command opens a panel with LiteDB database collections and documents
-	including nested documents and arrays. Root documents may be viewed and
-	edited as JSON. Nested documents may not be edited directly.
+	This command opens a panel with LiteDB database collections or documents.
+	Root documents may be viewed and edited as JSON if they have the _id key.
+	Nested documents are not edited directly.
 
 	Paging. Large collections is not a problem. Documents are shown 1000/page.
 	Press [PgDn]/[PgUp] at last/first panel items to show next/previous pages.
+	Paging is not used with queries, they may use LIMIT and OFFSET themselves.
 
 	KEYS AND ACTIONS
 
@@ -23,49 +24,59 @@
 		Prompts for a new name and renames the current collection.
 
 	[F4]
-		Edits documents in the documents panel.
-		It opens the editor with current document JSON.
+		Edits the current document JSON and updates the document.
 
 	[F7]
-		Creates new documents in the documents panel.
-		It opens the modal editor for the new document JSON.
+		Opens the editor for the new document JSON.
 
 .Parameter ConnectionString
-		Specifies the LiteDB connection string. If CollectionName is omitted
-		then the panel shows collections.
+		Specifies the LiteDB connection string. If Query is omitted then the
+		panel shows database collections. Use System in order to include the
+		system collections.
 
-.Parameter CollectionName
-		Specifies the collection name and tells to show collection documents.
+.Parameter Query
+		Specifies either the collection name or SQL SELECT command and tells to
+		show collection or queried documents. Note that SELECT should use _id
+		or $ in order to modify or delete result documents in the panel.
 
 .Parameter System
-		Tells to include system collections.
+		Tells to include and show system collections.
 
 .Example
-	># Browse all collections of "MyDatabase.LiteDB":
-	Open-LitePanel MyDatabase.LiteDB -System
+	># Browse collections
+	Open-LitePanel Test.LiteDB -System
 
 .Example
-	># Browse documents of MyCollection of "MyDatabase.LiteDB":
-	Open-LitePanel MyDatabase.LiteDB MyCollection
+	># Browse Log documents
+	Open-LitePanel Test.LiteDB Log
+
+.Example
+	># Browse some documents from Log
+	Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE ...'
+
+.Link
+	https://www.litedb.org/api/query/
 #>
+
 function Open-LitePanel {
-	[CmdletBinding()]
+	[CmdletBinding(DefaultParameterSetName='Database')]
 	param(
 		[Parameter(Position=0, Mandatory=1)]
 		[string]$ConnectionString
 		,
-		[Parameter(Position=1)]
-		[string]$CollectionName
+		[Parameter(ParameterSetName='Query', Position=1, Mandatory=1)]
+		[string]$Query
 		,
+		[Parameter(ParameterSetName='Database')]
 		[switch]$System
 	)
 
 	trap {Write-Error -ErrorRecord $_}
 
-	if ($CollectionName) {
-		(New-FLCollectionExplorer $ConnectionString $CollectionName).OpenPanel()
+	if ($Query) {
+		(New-FLDocumentsExplorer $ConnectionString $Query).OpenPanel()
 	}
 	else {
-		(New-FLDatabaseExplorer $ConnectionString -System:$System).OpenPanel()
+		(New-FLCollectionsExplorer $ConnectionString -System:$System).OpenPanel()
 	}
 }
