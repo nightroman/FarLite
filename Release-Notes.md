@@ -1,5 +1,9 @@
 # FarLite Release Notes
 
+## v0.0.3
+
+`Open-LitePanel` - new parameter `Parameters`.
+
 ## v0.0.2
 
 Requires Ldbc 0.4.2

@@ -39,20 +39,23 @@
 		show collection or queried documents. Note that SELECT should use _id
 		or $ in order to modify or delete result documents in the panel.
 
-.Parameter System
-		Tells to include and show system collections.
+.Parameter Parameters
+		Specifies query parameters, same as Parameters of Invoke-LiteCommand.
 
 .Example
-	># Browse collections
-	Open-LitePanel Test.LiteDB -System
+	> Open-LitePanel Test.LiteDB
+
+	Browse "Test.LiteDB" collections.
 
 .Example
-	># Browse Log documents
-	Open-LitePanel Test.LiteDB Log
+	> Open-LitePanel Test.LiteDB Log
+
+	Browse all documents from "Log".
 
 .Example
-	># Browse some documents from Log
-	Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE ...'
+	> Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE $.date > @0 ORDER BY $.date DESC' ([DateTime]::Today)
+
+	Browse filtered "Log" documents ordered by descending time.
 
 .Link
 	https://www.litedb.org/api/query/
@@ -67,6 +70,9 @@ function Open-LitePanel {
 		[Parameter(ParameterSetName='Query', Position=1, Mandatory=1)]
 		[string]$Query
 		,
+		[Parameter(ParameterSetName='Query', Position=2)]
+		[object]$Parameters
+		,
 		[Parameter(ParameterSetName='Database')]
 		[switch]$System
 	)
@@ -74,7 +80,7 @@ function Open-LitePanel {
 	trap {Write-Error -ErrorRecord $_}
 
 	if ($Query) {
-		(New-FLDocumentsExplorer $ConnectionString $Query).OpenPanel()
+		(New-FLDocumentsExplorer $ConnectionString $Query $Parameters).OpenPanel()
 	}
 	else {
 		(New-FLCollectionsExplorer $ConnectionString -System:$System).OpenPanel()

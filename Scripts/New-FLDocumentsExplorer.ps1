@@ -1,5 +1,5 @@
 
-function New-FLDocumentsExplorer($ConnectionString, $Query) {
+function New-FLDocumentsExplorer($ConnectionString, $Query, $Parameters) {
 	$Query = $Query.Trim()
 	if ($Query -match '^\S+$') {
 		$CollectionName = $Query
@@ -13,6 +13,7 @@ function New-FLDocumentsExplorer($ConnectionString, $Query) {
 			ConnectionString = $ConnectionString
 			CollectionName = $CollectionName
 			Query = $Query
+			Parameters = $Parameters
 		}
 		FileComparer = [PowerShellFar.FileMetaComparer]'_id'
 		AsCreateFile = {FLDocumentsExplorer_AsCreateFile @args}
@@ -156,9 +157,9 @@ function FLDocumentsExplorer_AsGetData($1, $2) {
 	if ($2.NewFiles -or !$1.Cache) {
 		Use-LiteDatabase $1.Data.ConnectionString {
 			if ($1.Data.Query) {
-				$name = ''
-				Invoke-LiteCommand $1.Data.Query -As PS -Collection ([ref]$name)
-				$1.Data.CollectionName = $name
+				$collectionName = ''
+				Invoke-LiteCommand $1.Data.Query $1.Data.Parameters -As PS -Collection ([ref]$collectionName)
+				$1.Data.CollectionName = $collectionName
 			}
 			else {
 				$collection = Get-LiteCollection $1.Data.CollectionName
