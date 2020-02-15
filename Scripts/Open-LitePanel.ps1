@@ -43,19 +43,16 @@
 		Specifies query parameters, same as Parameters of Invoke-LiteCommand.
 
 .Example
-	> Open-LitePanel Test.LiteDB
+		>
 
-	Browse "Test.LiteDB" collections.
+# Browse "Test.LiteDB" collections
+Open-LitePanel Test.LiteDB
 
-.Example
-	> Open-LitePanel Test.LiteDB Log
+# Browse all documents from "Log"
+Open-LitePanel Test.LiteDB Log
 
-	Browse all documents from "Log".
-
-.Example
-	> Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE $.date > @0 ORDER BY $.date DESC' ([DateTime]::Today)
-
-	Browse filtered "Log" documents ordered by descending time.
+# Browse filtered "Log" documents ordered by descending time
+Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE $.date > @0 ORDER BY $.date DESC' ([DateTime]::Today)
 
 .Link
 	https://www.litedb.org/api/query/

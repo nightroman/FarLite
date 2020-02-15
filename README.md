@@ -1,6 +1,6 @@
 # FarLite
 
-PowerShell module with LiteDB browser in Far Manager
+PowerShell module with [LiteDB](https://www.litedb.org/) browser in [Far Manager](https://en.wikipedia.org/wiki/Far_Manager)
 
 Requires Far Manager with FarNet.PowerShellFar and [Ldbc](https://github.com/nightroman/Ldbc)
 
@@ -25,21 +25,14 @@ help about_FarLite
 
 ## Examples
 
-Browse "Test.LiteDB" collections.
-
 ```powershell
+# Browse "Test.LiteDB" collections
 Open-LitePanel Test.LiteDB
-```
 
-Browse all documents from "Log".
-
-```powershell
+# Browse all documents from "Log"
 Open-LitePanel Test.LiteDB Log
-```
 
-Browse filtered "Log" documents ordered by descending time.
-
-```powershell
+# Browse filtered "Log" documents ordered by descending time
 Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE $.date > @0 ORDER BY $.date DESC' ([DateTime]::Today)
 ```
 
