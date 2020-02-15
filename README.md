@@ -1,8 +1,13 @@
 # FarLite
 
-PowerShell module with [LiteDB](https://www.litedb.org/) browser in [Far Manager](https://en.wikipedia.org/wiki/Far_Manager)
+[LiteDB]: https://www.litedb.org/
+[Far Manager]: https://en.wikipedia.org/wiki/Far_Manager
+[FarNet.PowerShellFar]: https://github.com/nightroman/FarNet/wiki
+[Ldbc]: https://github.com/nightroman/Ldbc
 
-Requires Far Manager with FarNet.PowerShellFar and [Ldbc](https://github.com/nightroman/Ldbc)
+PowerShell module with [LiteDB] browser in [Far Manager]
+
+Requires Far Manager with [FarNet.PowerShellFar] and [Ldbc]
 
 ## How to start
 
