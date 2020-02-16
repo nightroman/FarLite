@@ -64,11 +64,16 @@ function FLCollectionsExplorer_AsCreateFile($1, $2) {
 	Use-LiteDatabase $1.Data.ConnectionString {
 		Use-LiteTransaction {
 			$collection = Get-LiteCollection $newName
-			Add-LiteData $collection @{_id = 1}
-			Remove-LiteData $collection '$._id = 1'
+			if ($collection.Count() -eq 0) {
+				$id = [LiteDB.ObjectId]::NewObjectId()
+				Add-LiteData $collection @{_id = $id}
+				Remove-LiteData $collection -ById $id
+			}
 		}
 	}
-	$2.PostName = $newName
+
+	#! PostName is case sensitive, collection may exist with different case, PostFile goes to it regardless
+	$2.PostFile = New-FarFile $newName
 }
 
 function FLCollectionsExplorer_AsDeleteFiles($1, $2) {

@@ -10,12 +10,14 @@ function New-FLDocumentsExplorer($ConnectionString, $Query, $Parameters) {
 	}
 	New-Object PowerShellFar.ObjectExplorer -Property @{
 		Data = @{
+			FarLiteId = 'ecf6e905-fdee-4a3b-b82b-9d577233ee80'
 			ConnectionString = $ConnectionString
 			CollectionName = $CollectionName
 			Query = $Query
 			Parameters = $Parameters
 		}
 		FileComparer = [PowerShellFar.FileMetaComparer]'_id'
+		AsAcceptFiles = {FLDocumentsExplorer_AsAcceptFiles @args}
 		AsCreateFile = {FLDocumentsExplorer_AsCreateFile @args}
 		AsCreatePanel = {FLDocumentsExplorer_AsCreatePanel @args}
 		AsDeleteFiles = {FLDocumentsExplorer_AsDeleteFiles @args}
@@ -125,7 +127,7 @@ function FLDocumentsExplorer_AsDeleteFiles($1, $2) {
 		Use-LiteDatabase $1.Data.ConnectionString {
 			$collection = Get-LiteCollection $1.Data.CollectionName
 			foreach($doc in $2.FilesData) {
-				Remove-LiteData $collection '$._id = @_id', @{_id = $doc._id}
+				Remove-LiteData $collection -ById $doc._id
 			}
 		}
 	}
@@ -149,7 +151,7 @@ function FLDocumentsExplorer_AsGetContent($1, $2) {
 
 	$doc = Use-LiteDatabase $1.Data.ConnectionString {
 		$collection = Get-LiteCollection $1.Data.CollectionName
-		Get-LiteData $collection '$._id = @_id', @{_id = $id}
+		Get-LiteData $collection -ById $id
 	}
 
 	$2.UseText = $doc.Print()
@@ -192,6 +194,33 @@ function FLDocumentsExplorer_AsSetText($1, $2) {
 		return
 	}
 
+	$1.Cache.Clear()
+	$Far.Panel.Update($true)
+}
+
+function FLDocumentsExplorer_AsAcceptFiles($1, $2) {
+	# check same explorer
+	if ($2.Explorer.Data.FarLiteId -ne $1.Data.FarLiteId) {
+		Show-FarMessage 'Cannot copy/move from unknown panel.' FarLite
+		return
+	}
+
+	# confirm
+	$text = '{0} {1} documents?' -f $(if ($2.Move) {'Move'} else {'Copy'}), $2.Files.Count
+	if (Show-FarMessage $text FarLite -Buttons OkCancel) {
+		return
+	}
+
+	# copy/move
+	$2.ToDeleteFiles = $2.Move
+	Use-LiteDatabase $1.Data.ConnectionString {
+		$collection = Get-LiteCollection $1.Data.CollectionName
+		foreach($d in $2.FilesData) {
+			Set-LiteData $collection $d -Add
+		}
+	}
+
+	# update
 	$1.Cache.Clear()
 	$Far.Panel.Update($true)
 }

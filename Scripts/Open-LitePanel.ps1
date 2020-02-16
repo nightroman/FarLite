@@ -26,6 +26,9 @@
 	[F4]
 		Edits the current document JSON and updates the document.
 
+	[F5] / [F6]
+		Copy / Move documents from another FarLite panel.
+
 	[F7]
 		Collections:
 			Prompts for a collection name and creates a collection.

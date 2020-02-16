@@ -1,5 +1,13 @@
 # FarLite Release Notes
 
+## v0.0.6
+
+Requires Ldbc 0.6.1
+
+- Copy / Move documents from another FarLite panel.
+- Edit `$date`, `$guid`, `$oid`.
+- Amend create new collection.
+
 ## v0.0.5
 
 Fix edit dates in `Edit-LiteJsonLine`.

@@ -23,6 +23,7 @@ Open-LitePanel
 
         Documents panel
             view, edit, create, delete documents
+            copy / move from another FarLite panel
 
     Import the module and get help about parameters and features:
 

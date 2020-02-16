@@ -7,10 +7,17 @@
 
 		key : "<text>"
 		key : {$date: "<text>"}
+		key : {$guid: "<text>"}
+		key : {$oid: "<text>"}
 
 	The line may ends with a comma. The <text> is opened in another editor,
 	dates are converted to local time and more friendly format. After saved
 	changes the current line is updated, with a comma if it was there.
+
+	On editing $date, if you remove the text and save the empty file, then the
+	current date and time is inserted.
+
+	On editing $guid and $oid a new generated value is inserted if you confirm.
 #>
 
 function Edit-LiteJsonLine {
@@ -48,27 +55,52 @@ function Edit-LiteJsonLine {
 	elseif ($value -is [datetime]) {
 		$text = $value.ToString('yyyy-MM-dd HH:mm:ss')
 	}
+	elseif ($value -is [guid]) {
+		if (Show-FarMessage 'Generate new Guid?' FarLite OkCancel) {
+			return
+		}
+	}
+	elseif ($value -is [LiteDB.ObjectId]) {
+		if (Show-FarMessage 'Generate new ObjectId?' FarLite OkCancel) {
+			return
+		}
+	}
 	else {
-		throw "Value should be string or date."
+		Show-FarMessage 'Edit this value directly.' FarLite
+		return
 	}
 
 	# edit text
-	$arg = New-Object FarNet.EditTextArgs -Property @{
-		Title = "Edit string value '$key'"
-		Extension = '.txt'
-		Text = $text
-	}
-	$text2 = $Far.AnyEditor.EditText($arg)
-	if ($text2 -ceq $text) {
-		return
+	if ($value -is [string] -or $value -is [datetime]) {
+		$arg = New-Object FarNet.EditTextArgs -Property @{
+			Title = "Edit string value '$key'"
+			Extension = '.txt'
+			Text = $text
+		}
+		$text2 = $Far.AnyEditor.EditText($arg)
+		if ($text2 -ceq $text) {
+			return
+		}
 	}
 
 	# make new value
 	if ($value -is [string]) {
 		$value2 = $text2
 	}
-	else {
-		$value2 = [datetime]$text2
+	elseif ($value -is [datetime]) {
+		$text2 = $text2.Trim()
+		if ($text2) {
+			$value2 = [datetime]$text2
+		}
+		else {
+			$value2 = [datetime]([datetime]::Now.ToString('yyyy-MM-dd hh:mm:ss'))
+		}
+	}
+	elseif ($value -is [guid]) {
+		$value2 = [guid]::NewGuid()
+	}
+	elseif ($value -is [LiteDB.ObjectId]) {
+		$value2 = [LiteDB.ObjectId]::NewObjectId()
 	}
 
 	# make new line
