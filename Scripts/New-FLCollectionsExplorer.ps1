@@ -5,7 +5,8 @@ function New-FLCollectionsExplorer($ConnectionString, [switch]$System) {
 			ConnectionString = $ConnectionString
 			System = $System
 		}
-		Functions = 'DeleteFiles, RenameFile'
+		Functions = 'CreateFile, DeleteFiles, RenameFile'
+		AsCreateFile = {FLCollectionsExplorer_AsCreateFile @args}
 		AsCreatePanel = {FLCollectionsExplorer_AsCreatePanel @args}
 		AsDeleteFiles = {FLCollectionsExplorer_AsDeleteFiles @args}
 		AsExploreDirectory = {FLCollectionsExplorer_AsExploreDirectory @args}
@@ -44,9 +45,28 @@ function FLCollectionsExplorer_AsExploreDirectory($1, $2) {
 
 function FLCollectionsExplorer_AsRenameFile($1, $2) {
 	$newName = ([string]$Far.Input('New name', $null, 'Rename', $2.File.Name)).Trim()
-	if (!$newName) {return}
+	if (!$newName) {
+		return
+	}
+
 	Use-LiteDatabase $1.Data.ConnectionString {
 		$Database.RenameCollection($2.File.Name, $newName)
+	}
+	$2.PostName = $newName
+}
+
+function FLCollectionsExplorer_AsCreateFile($1, $2) {
+	$newName = $Far.Input('New collection name', $null, 'FarLite')
+	if (!$newName) {
+		return
+	}
+
+	Use-LiteDatabase $1.Data.ConnectionString {
+		Use-LiteTransaction {
+			$collection = Get-LiteCollection $newName
+			Add-LiteData $collection @{_id = 1}
+			Remove-LiteData $collection '$._id = 1'
+		}
 	}
 	$2.PostName = $newName
 }

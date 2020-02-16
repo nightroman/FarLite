@@ -18,7 +18,8 @@ Open-LitePanel
     This command opens Far Manager panels for browsing LiteDB databases.
 
         Collections panel
-            view, rename, delete collections, open documents panels
+            view, rename, create, delete collections
+            open collection documents panels
 
         Documents panel
             view, edit, create, delete documents

@@ -27,7 +27,10 @@
 		Edits the current document JSON and updates the document.
 
 	[F7]
-		Opens the editor for the new document JSON.
+		Collections:
+			Prompts for a collection name and creates a collection.
+		Documents:
+			Opens the editor for the new document JSON.
 
 .Parameter ConnectionString
 		Specifies the LiteDB connection string. If Query is omitted then the

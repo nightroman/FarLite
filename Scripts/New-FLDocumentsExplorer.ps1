@@ -43,7 +43,12 @@ function FLDocumentsExplorer_EditorOpened {
 	$this.add_KeyDown({
 		if ($_.Key.KeyDown -and $_.Key.Is([FarNet.KeyCode]::F4)) {
 			$_.Ignore = $true
-			Edit-LiteJsonLine
+			try {
+				Edit-LiteJsonLine
+			}
+			catch {
+				Show-FarMessage $_ FarLite
+			}
 		}
 	})
 }

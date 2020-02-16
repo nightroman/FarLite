@@ -1,5 +1,11 @@
 # FarLite Release Notes
 
+## v0.0.4
+
+Collections panel - use `[F7]` to create new collections.
+
+`Edit-LiteJsonLine` - also edit dates (local time, friendly format).
+
 ## v0.0.3
 
 `Open-LitePanel` - new parameter `Parameters`.
