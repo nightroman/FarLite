@@ -68,7 +68,7 @@ function Edit-LiteJsonLine {
 		$value2 = $text2
 	}
 	else {
-		$value2 = [datetime]$text
+		$value2 = [datetime]$text2
 	}
 
 	# make new line

@@ -1,5 +1,9 @@
 # FarLite Release Notes
 
+## v0.0.5
+
+Fix edit dates in `Edit-LiteJsonLine`.
+
 ## v0.0.4
 
 Collections panel - use `[F7]` to create new collections.
