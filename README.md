@@ -19,13 +19,13 @@ Save-Module FarLite -Path $env:FARHOME\FarNet\Modules\PowerShellFar\Modules
 ```
 
 You can use the usual `Install-Module FarLite` command, too.
-But the module works only in Far Manager with PowerShellFar.
+But the module works only in PowerShellFar.
 
-Import the module and get help:
+In Far Manager, import the module and get help:
 
 ```powershell
-Import-Module FarLite
-help about_FarLite
+ps: Import-Module FarLite
+ps: help about_FarLite
 ```
 
 ## Examples
@@ -37,8 +37,11 @@ Open-LitePanel Test.LiteDB
 # Browse all documents from "Log"
 Open-LitePanel Test.LiteDB Log
 
+# Browse "Log" documents using specified columns
+Open-LitePanel Test.LiteDB Log -Columns Message, @{e='Date'; k='DM'}, @{e='Type', w=7}
+
 # Browse filtered "Log" documents ordered by descending time
-Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE $.date > @0 ORDER BY $.date DESC' ([DateTime]::Today)
+Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE Date > @0 ORDER BY Date DESC' ([DateTime]::Today)
 ```
 
 ## See also

@@ -1,5 +1,5 @@
 
-function New-FLDocumentsExplorer($ConnectionString, $Query, $Parameters) {
+function New-FLDocumentsExplorer($ConnectionString, $Query, $Parameters, $Columns) {
 	$Query = $Query.Trim()
 	if ($Query -match '^\S+$') {
 		$CollectionName = $Query
@@ -15,6 +15,7 @@ function New-FLDocumentsExplorer($ConnectionString, $Query, $Parameters) {
 			CollectionName = $CollectionName
 			Query = $Query
 			Parameters = $Parameters
+			Columns = $Columns
 		}
 		FileComparer = [PowerShellFar.FileMetaComparer]'_id'
 		AsAcceptFiles = {FLDocumentsExplorer_AsAcceptFiles @args}
@@ -29,6 +30,7 @@ function New-FLDocumentsExplorer($ConnectionString, $Query, $Parameters) {
 
 function FLDocumentsExplorer_AsCreatePanel($1) {
 	$panel = [PowerShellFar.ObjectPanel]$1
+	$panel.Columns = $1.Data.Columns
 	if ($1.Data.Query) {
 		$title = $1.Data.Query
 	}

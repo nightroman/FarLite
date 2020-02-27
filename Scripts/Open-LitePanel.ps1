@@ -48,6 +48,10 @@
 .Parameter Parameters
 		Specifies query parameters, same as Parameters of Invoke-LiteCommand.
 
+.Parameter Columns
+		Specifies the custom panel columns. See:
+		ps: help Out-FarPanel -Parameter Columns
+
 .Example
 		>
 
@@ -57,8 +61,11 @@ Open-LitePanel Test.LiteDB
 # Browse all documents from "Log"
 Open-LitePanel Test.LiteDB Log
 
+# Browse "Log" documents using specified columns
+Open-LitePanel Test.LiteDB Log -Columns Message, @{e='Date'; k='DM'}, @{e='Type', w=7}
+
 # Browse filtered "Log" documents ordered by descending time
-Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE $.date > @0 ORDER BY $.date DESC' ([DateTime]::Today)
+Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE Date > @0 ORDER BY Date DESC' ([DateTime]::Today)
 
 .Link
 	https://www.litedb.org/api/query/
@@ -76,6 +83,9 @@ function Open-LitePanel {
 		[Parameter(ParameterSetName='Query', Position=2)]
 		[object]$Parameters
 		,
+		[Parameter(ParameterSetName='Query')]
+		[object[]]$Columns
+		,
 		[Parameter(ParameterSetName='Database')]
 		[switch]$System
 	)
@@ -83,7 +93,7 @@ function Open-LitePanel {
 	trap {Write-Error -ErrorRecord $_}
 
 	if ($Query) {
-		(New-FLDocumentsExplorer $ConnectionString $Query $Parameters).OpenPanel()
+		(New-FLDocumentsExplorer $ConnectionString $Query $Parameters $Columns).OpenPanel()
 	}
 	else {
 		(New-FLCollectionsExplorer $ConnectionString -System:$System).OpenPanel()

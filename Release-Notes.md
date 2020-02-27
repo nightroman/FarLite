@@ -1,5 +1,9 @@
 # FarLite Release Notes
 
+## v0.0.7
+
+`Open-LitePanel` - new parameter `Columns`.
+
 ## v0.0.6
 
 Requires Ldbc 0.6.1
