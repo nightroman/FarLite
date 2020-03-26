@@ -1,5 +1,12 @@
 # FarLite Release Notes
 
+## v0.0.8
+
+Recommended: use the latest Ldbc 0.7.2. It includes LiteDB 5.0.5 with corrected
+non-Latin characters in JSON, e.g. important for representing Cyrillic strings.
+
+Minor fixes of UI element texts.
+
 ## v0.0.7
 
 `Open-LitePanel` - new parameter `Columns`.

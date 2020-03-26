@@ -105,7 +105,7 @@ function FLDocumentsExplorer_AsDeleteFiles($1, $2) {
 	try {
 		foreach($doc in $2.FilesData) {
 			if ($null -eq $doc._id) {
-				throw 'Cannot edit documents without _id'
+				throw 'Cannot delete documents without _id'
 			}
 		}
 	}

@@ -73,7 +73,7 @@ function Edit-LiteJsonLine {
 	# edit text
 	if ($value -is [string] -or $value -is [datetime]) {
 		$arg = New-Object FarNet.EditTextArgs -Property @{
-			Title = "Edit string value '$key'"
+			Title = "Edit value '$key'"
 			Extension = '.txt'
 			Text = $text
 		}
