@@ -2,7 +2,7 @@
 
 [LiteDB]: https://www.litedb.org/
 [Far Manager]: https://en.wikipedia.org/wiki/Far_Manager
-[FarNet.PowerShellFar]: https://github.com/nightroman/FarNet/wiki
+[FarNet.PowerShellFar]: https://github.com/nightroman/FarNet/wiki/PowerShellFar
 [Ldbc]: https://github.com/nightroman/Ldbc
 
 PowerShell module with [LiteDB] browser in [Far Manager]
