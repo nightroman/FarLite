@@ -43,4 +43,4 @@ Edit-LiteJsonLine
     manually, for example from the PowerShellFar command box or using a macro.
 
 SEE ALSO
-    Release Notes https://github.com/nightroman/FarLite/blob/master/Release-Notes.md
+    Release Notes https://github.com/nightroman/FarLite/blob/main/Release-Notes.md

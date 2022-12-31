@@ -24,7 +24,7 @@
 			Tags = 'FarManager', 'LiteDB', 'Database'
 			ProjectUri = 'https://github.com/nightroman/FarLite'
 			LicenseUri = 'http://www.apache.org/licenses/LICENSE-2.0'
-			ReleaseNotes = 'https://github.com/nightroman/FarLite/blob/master/Release-Notes.md'
+			ReleaseNotes = 'https://github.com/nightroman/FarLite/blob/main/Release-Notes.md'
 		}
 	}
 }

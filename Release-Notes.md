@@ -1,5 +1,9 @@
 # FarLite Release Notes
 
+## v1.0.0
+
+master -> main, updated links
+
 ## v0.0.8
 
 Recommended: use the latest Ldbc 0.7.2. It includes LiteDB 5.0.5 with corrected

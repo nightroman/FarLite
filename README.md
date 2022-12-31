@@ -46,6 +46,6 @@ Open-LitePanel Test.LiteDB 'SELECT $ FROM Log WHERE Date > @0 ORDER BY Date DESC
 
 ## See also
 
-- [FarLite Release Notes](https://github.com/nightroman/FarLite/blob/master/Release-Notes.md)
-- [about_FarLite.help.txt](https://github.com/nightroman/FarLite/blob/master/about_FarLite.help.txt)
+- [FarLite Release Notes](https://github.com/nightroman/FarLite/blob/main/Release-Notes.md)
+- [about_FarLite.help.txt](https://github.com/nightroman/FarLite/blob/main/about_FarLite.help.txt)
 - [FarMongo, similar project for MongoDB](https://github.com/nightroman/FarMongo)
