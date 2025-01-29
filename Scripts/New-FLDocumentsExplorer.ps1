@@ -8,38 +8,39 @@ function New-FLDocumentsExplorer($ConnectionString, $Query, $Parameters, $Column
 	else {
 		$CollectionName = $null
 	}
-	New-Object PowerShellFar.ObjectExplorer -Property @{
-		Data = @{
-			FarLiteId = 'ecf6e905-fdee-4a3b-b82b-9d577233ee80'
-			ConnectionString = $ConnectionString
-			CollectionName = $CollectionName
-			Query = $Query
-			Parameters = $Parameters
-			Columns = $Columns
-		}
-		FileComparer = [PowerShellFar.FileMetaComparer]'_id'
-		AsAcceptFiles = {FLDocumentsExplorer_AsAcceptFiles @args}
-		AsCreateFile = {FLDocumentsExplorer_AsCreateFile @args}
-		AsCreatePanel = {FLDocumentsExplorer_AsCreatePanel @args}
-		AsDeleteFiles = {FLDocumentsExplorer_AsDeleteFiles @args}
-		AsGetContent = {FLDocumentsExplorer_AsGetContent @args}
-		AsGetData = {FLDocumentsExplorer_AsGetData @args}
-		AsSetText = {FLDocumentsExplorer_AsSetText @args}
+
+	$Explorer = [PowerShellFar.ObjectExplorer]::new()
+	$Explorer.Data = @{
+		FarLiteId = 'ecf6e905-fdee-4a3b-b82b-9d577233ee80'
+		ConnectionString = $ConnectionString
+		CollectionName = $CollectionName
+		Query = $Query
+		Parameters = $Parameters
+		Columns = $Columns
 	}
+	$Explorer.FileComparer = [PowerShellFar.FileMetaComparer]::new('_id')
+	$Explorer.AsAcceptFiles = ${function:FLDocumentsExplorer_AsAcceptFiles}
+	$Explorer.AsCreateFile = ${function:FLDocumentsExplorer_AsCreateFile}
+	$Explorer.AsCreatePanel = ${function:FLDocumentsExplorer_AsCreatePanel}
+	$Explorer.AsDeleteFiles = ${function:FLDocumentsExplorer_AsDeleteFiles}
+	$Explorer.AsGetContent = ${function:FLDocumentsExplorer_AsGetContent}
+	$Explorer.AsGetData = ${function:FLDocumentsExplorer_AsGetData}
+	$Explorer.AsSetText = ${function:FLDocumentsExplorer_AsSetText}
+	$Explorer
 }
 
-function FLDocumentsExplorer_AsCreatePanel($1) {
-	$panel = [PowerShellFar.ObjectPanel]$1
-	$panel.Columns = $1.Data.Columns
-	if ($1.Data.Query) {
-		$title = $1.Data.Query
+function FLDocumentsExplorer_AsCreatePanel($Explorer) {
+	$panel = [PowerShellFar.ObjectPanel]::new($Explorer)
+	$panel.Columns = $Explorer.Data.Columns
+	if ($Explorer.Data.Query) {
+		$title = $Explorer.Data.Query
 	}
 	else {
-		$title = $1.Data.CollectionName
+		$title = $Explorer.Data.CollectionName
 		$panel.PageLimit = 1000
 	}
 	$panel.Title = $title
-	$1.Data.Panel = $panel
+	$Explorer.Data.Panel = $panel
 	$panel
 }
 
@@ -57,16 +58,15 @@ function FLDocumentsExplorer_EditorOpened {
 	})
 }
 
-function FLDocumentsExplorer_AsCreateFile($1, $2) {
+function FLDocumentsExplorer_AsCreateFile($Explorer, $2) {
 	# edit new json
 	$json = ''
 	for() {
-		$arg = New-Object FarNet.EditTextArgs -Property @{
-			Title = 'New document (JSON)'
-			Extension = 'js'
-			Text = $json
-			EditorOpened = {FLDocumentsExplorer_EditorOpened}
-		}
+		$arg = [FarNet.EditTextArgs]::new()
+		$arg.Title = 'New document (JSON)'
+		$arg.Extension = 'js'
+		$arg.Text = $json
+		$arg.EditorOpened = ${function:FLDocumentsExplorer_EditorOpened}
 		$json = $Far.AnyEditor.EditText($arg)
 		if (!$json) {
 			return
@@ -85,8 +85,8 @@ function FLDocumentsExplorer_AsCreateFile($1, $2) {
 
 	# add document
 	try {
-		Use-LiteDatabase $1.Data.ConnectionString {
-			$collection = Get-LiteCollection $1.Data.CollectionName
+		Use-LiteDatabase $Explorer.Data.ConnectionString {
+			$collection = Get-LiteCollection $Explorer.Data.CollectionName
 			Add-LiteData $collection $new
 		}
 	}
@@ -97,10 +97,10 @@ function FLDocumentsExplorer_AsCreateFile($1, $2) {
 
 	# post dummy file with _id
 	$2.PostFile = New-FarFile -Data ([PSCustomObject]@{_id = $new._id})
-	$1.Data.Panel.NeedsNewFiles = $true
+	$Explorer.Data.Panel.NeedsNewFiles = $true
 }
 
-function FLDocumentsExplorer_AsDeleteFiles($1, $2) {
+function FLDocumentsExplorer_AsDeleteFiles($Explorer, $2) {
 	# check _id
 	try {
 		foreach($doc in $2.FilesData) {
@@ -126,8 +126,8 @@ function FLDocumentsExplorer_AsDeleteFiles($1, $2) {
 
 	# remove
 	try {
-		Use-LiteDatabase $1.Data.ConnectionString {
-			$collection = Get-LiteCollection $1.Data.CollectionName
+		Use-LiteDatabase $Explorer.Data.ConnectionString {
+			$collection = Get-LiteCollection $Explorer.Data.CollectionName
 			foreach($doc in $2.FilesData) {
 				Remove-LiteData $collection -ById $doc._id
 			}
@@ -140,10 +140,10 @@ function FLDocumentsExplorer_AsDeleteFiles($1, $2) {
 		}
 	}
 
-	$1.Data.Panel.NeedsNewFiles = $true
+	$Explorer.Data.Panel.NeedsNewFiles = $true
 }
 
-function FLDocumentsExplorer_AsGetContent($1, $2) {
+function FLDocumentsExplorer_AsGetContent($Explorer, $2) {
 	$id = $2.File.Data._id
 	if ($null -eq $id) {
 		Show-FarMessage 'Cannot edit documents without _id'
@@ -151,43 +151,43 @@ function FLDocumentsExplorer_AsGetContent($1, $2) {
 		return
 	}
 
-	$doc = Use-LiteDatabase $1.Data.ConnectionString {
-		$collection = Get-LiteCollection $1.Data.CollectionName
+	$doc = Use-LiteDatabase $Explorer.Data.ConnectionString {
+		$collection = Get-LiteCollection $Explorer.Data.CollectionName
 		Get-LiteData $collection -ById $id
 	}
 
 	$2.UseText = $doc.Print()
 	$2.UseFileExtension = 'js'
 	$2.CanSet = $true
-	$2.EditorOpened = {FLDocumentsExplorer_EditorOpened}
+	$2.EditorOpened = ${function:FLDocumentsExplorer_EditorOpened}
 }
 
-function FLDocumentsExplorer_AsGetData($1, $2) {
-	if ($2.NewFiles -or !$1.Cache) {
-		Use-LiteDatabase $1.Data.ConnectionString {
-			if ($1.Data.Query) {
+function FLDocumentsExplorer_AsGetData($Explorer, $2) {
+	if ($2.NewFiles -or !$Explorer.Cache) {
+		Use-LiteDatabase $Explorer.Data.ConnectionString {
+			if ($Explorer.Data.Query) {
 				$collectionName = ''
-				Invoke-LiteCommand $1.Data.Query $1.Data.Parameters -As PS -Collection ([ref]$collectionName)
-				$1.Data.CollectionName = $collectionName
+				Invoke-LiteCommand $Explorer.Data.Query $Explorer.Data.Parameters -As PS -Collection ([ref]$collectionName)
+				$Explorer.Data.CollectionName = $collectionName
 			}
 			else {
-				$collection = Get-LiteCollection $1.Data.CollectionName
+				$collection = Get-LiteCollection $Explorer.Data.CollectionName
 				Get-LiteData $collection -First $2.Limit -Skip $2.Offset -As PS
 			}
 		}
 	}
 	else {
-		, $1.Cache
+		, $Explorer.Cache
 	}
 }
 
-function FLDocumentsExplorer_AsSetText($1, $2) {
+function FLDocumentsExplorer_AsSetText($Explorer, $2) {
 	$new = [Ldbc.Dictionary]::FromJson($2.Text)
 	$new.EnsureId()
 
 	try {
-		Use-LiteDatabase $1.Data.ConnectionString {
-			$collection = Get-LiteCollection $1.Data.CollectionName
+		Use-LiteDatabase $Explorer.Data.ConnectionString {
+			$collection = Get-LiteCollection $Explorer.Data.CollectionName
 			Set-LiteData $collection $new -Add
 		}
 	}
@@ -196,13 +196,13 @@ function FLDocumentsExplorer_AsSetText($1, $2) {
 		return
 	}
 
-	$1.Cache.Clear()
-	$Far.Panel.Update($true)
+	$Explorer.Cache.Clear()
+	$Explorer.Data.Panel.Update($true)
 }
 
-function FLDocumentsExplorer_AsAcceptFiles($1, $2) {
+function FLDocumentsExplorer_AsAcceptFiles($Explorer, $2) {
 	# check same explorer
-	if ($2.Explorer.Data.FarLiteId -ne $1.Data.FarLiteId) {
+	if ($2.Explorer.Data.FarLiteId -ne $Explorer.Data.FarLiteId) {
 		Show-FarMessage 'Cannot copy/move from unknown panel.' FarLite
 		return
 	}
@@ -215,14 +215,14 @@ function FLDocumentsExplorer_AsAcceptFiles($1, $2) {
 
 	# copy/move
 	$2.ToDeleteFiles = $2.Move
-	Use-LiteDatabase $1.Data.ConnectionString {
-		$collection = Get-LiteCollection $1.Data.CollectionName
+	Use-LiteDatabase $Explorer.Data.ConnectionString {
+		$collection = Get-LiteCollection $Explorer.Data.CollectionName
 		foreach($d in $2.FilesData) {
 			Set-LiteData $collection $d -Add
 		}
 	}
 
 	# update
-	$1.Cache.Clear()
-	$Far.Panel.Update($true)
+	$Explorer.Cache.Clear()
+	$Explorer.Data.Panel.Update($true)
 }

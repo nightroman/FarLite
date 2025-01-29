@@ -93,9 +93,9 @@ function Open-LitePanel {
 	trap {Write-Error -ErrorRecord $_}
 
 	if ($Query) {
-		(New-FLDocumentsExplorer $ConnectionString $Query $Parameters $Columns).OpenPanel()
+		(New-FLDocumentsExplorer $ConnectionString $Query $Parameters $Columns).CreatePanel().Open()
 	}
 	else {
-		(New-FLCollectionsExplorer $ConnectionString -System:$System).OpenPanel()
+		(New-FLCollectionsExplorer $ConnectionString -System:$System).CreatePanel().Open()
 	}
 }

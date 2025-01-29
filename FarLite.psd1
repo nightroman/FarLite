@@ -8,8 +8,6 @@
 
 	RootModule = 'FarLite.psm1'
 	RequiredModules = 'Ldbc'
-	PowerShellVersion = '3.0'
-	DotNetFrameworkVersion = '4.5'
 
 	AliasesToExport = @()
 	CmdletsToExport = @()

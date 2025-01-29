@@ -45,3 +45,7 @@ task pushPSGallery package, {
 	Publish-Module -Path z\$ModuleName -NuGetApiKey $NuGetApiKey
 },
 clean
+
+task test {
+	Start-Far "ps: ..\Test-FarNet.ps1 * -Quit" $env:FarNetCode\Test\Panels.Lite -ReadOnly
+}

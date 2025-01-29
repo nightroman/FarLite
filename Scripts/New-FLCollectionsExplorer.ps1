@@ -1,32 +1,31 @@
 
 function New-FLCollectionsExplorer($ConnectionString, [switch]$System) {
-	New-Object PowerShellFar.PowerExplorer 2c77b1ed-c496-4823-9792-2e417a8c83a9 -Property @{
-		Data = @{
-			ConnectionString = $ConnectionString
-			System = $System
-		}
-		Functions = 'CreateFile, DeleteFiles, RenameFile'
-		AsCreateFile = {FLCollectionsExplorer_AsCreateFile @args}
-		AsCreatePanel = {FLCollectionsExplorer_AsCreatePanel @args}
-		AsDeleteFiles = {FLCollectionsExplorer_AsDeleteFiles @args}
-		AsExploreDirectory = {FLCollectionsExplorer_AsExploreDirectory @args}
-		AsGetFiles = {FLCollectionsExplorer_AsGetFiles @args}
-		AsRenameFile = {FLCollectionsExplorer_AsRenameFile @args}
+	$Explorer = [PowerShellFar.PowerExplorer]::new('2c77b1ed-c496-4823-9792-2e417a8c83a9')
+	$Explorer.Data = @{
+		ConnectionString = $ConnectionString
+		System = $System
 	}
+	$Explorer.Functions = 'CreateFile, DeleteFiles, RenameFile'
+	$Explorer.AsCreateFile = ${function:FLCollectionsExplorer_AsCreateFile}
+	$Explorer.AsCreatePanel = ${function:FLCollectionsExplorer_AsCreatePanel}
+	$Explorer.AsDeleteFiles = ${function:FLCollectionsExplorer_AsDeleteFiles}
+	$Explorer.AsExploreDirectory = ${function:FLCollectionsExplorer_AsExploreDirectory}
+	$Explorer.AsGetFiles = ${function:FLCollectionsExplorer_AsGetFiles}
+	$Explorer.AsRenameFile = ${function:FLCollectionsExplorer_AsRenameFile}
+	$Explorer
 }
 
-function FLCollectionsExplorer_AsCreatePanel {
-	param($1)
-	$panel = [FarNet.Panel]$1
+function FLCollectionsExplorer_AsCreatePanel($Explorer) {
+	$panel = [FarNet.Panel]::new($Explorer)
 	$panel.Title = 'Collections'
 	$panel.ViewMode = 0
-	$panel.SetPlan(0, (New-Object FarNet.PanelPlan))
+	$panel.SetPlan(0, ([FarNet.PanelPlan]::new()))
 	$panel
 }
 
-function FLCollectionsExplorer_AsGetFiles($1) {
-	Use-LiteDatabase $1.Data.ConnectionString {
-		if ($1.Data.System) {
+function FLCollectionsExplorer_AsGetFiles($Explorer) {
+	Use-LiteDatabase $Explorer.Data.ConnectionString {
+		if ($Explorer.Data.System) {
 			foreach($r in Invoke-LiteCommand 'SELECT $.name FROM $cols') {
 				New-FarFile -Name $r.name -Attributes Directory
 			}
@@ -39,29 +38,29 @@ function FLCollectionsExplorer_AsGetFiles($1) {
 	}
 }
 
-function FLCollectionsExplorer_AsExploreDirectory($1, $2) {
-	New-FLDocumentsExplorer $1.Data.ConnectionString $2.File.Name
+function FLCollectionsExplorer_AsExploreDirectory($Explorer, $2) {
+	New-FLDocumentsExplorer $Explorer.Data.ConnectionString $2.File.Name
 }
 
-function FLCollectionsExplorer_AsRenameFile($1, $2) {
+function FLCollectionsExplorer_AsRenameFile($Explorer, $2) {
 	$newName = ([string]$Far.Input('New name', $null, 'Rename', $2.File.Name)).Trim()
 	if (!$newName) {
 		return
 	}
 
-	Use-LiteDatabase $1.Data.ConnectionString {
+	Use-LiteDatabase $Explorer.Data.ConnectionString {
 		$Database.RenameCollection($2.File.Name, $newName)
 	}
 	$2.PostName = $newName
 }
 
-function FLCollectionsExplorer_AsCreateFile($1, $2) {
+function FLCollectionsExplorer_AsCreateFile($Explorer, $2) {
 	$newName = $Far.Input('New collection name', $null, 'FarLite')
 	if (!$newName) {
 		return
 	}
 
-	Use-LiteDatabase $1.Data.ConnectionString {
+	Use-LiteDatabase $Explorer.Data.ConnectionString {
 		Use-LiteTransaction {
 			$collection = Get-LiteCollection $newName
 			if ($collection.Count() -eq 0) {
@@ -76,7 +75,7 @@ function FLCollectionsExplorer_AsCreateFile($1, $2) {
 	$2.PostFile = New-FarFile $newName
 }
 
-function FLCollectionsExplorer_AsDeleteFiles($1, $2) {
+function FLCollectionsExplorer_AsDeleteFiles($Explorer, $2) {
 	# ask
 	if ($2.UI) {
 		$text = @"
@@ -86,7 +85,7 @@ $($2.Files[0..9] -join "`n")
 		if (Show-FarMessage $text Delete YesNo -LeftAligned) {return}
 	}
 	# drop
-	Use-LiteDatabase $1.Data.ConnectionString {
+	Use-LiteDatabase $Explorer.Data.ConnectionString {
 		foreach($file in $2.Files) {
 			try {
 				if (!$2.Force) {

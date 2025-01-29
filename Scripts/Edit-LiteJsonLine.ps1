@@ -72,11 +72,10 @@ function Edit-LiteJsonLine {
 
 	# edit text
 	if ($value -is [string] -or $value -is [datetime]) {
-		$arg = New-Object FarNet.EditTextArgs -Property @{
-			Title = "Edit value '$key'"
-			Extension = '.txt'
-			Text = $text
-		}
+		$arg = [FarNet.EditTextArgs]::new()
+		$arg.Title = "Edit value '$key'"
+		$arg.Extension = '.txt'
+		$arg.Text = $text
 		$text2 = $Far.AnyEditor.EditText($arg)
 		if ($text2 -ceq $text) {
 			return

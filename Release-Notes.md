@@ -1,5 +1,9 @@
 # FarLite Release Notes
 
+## v1.0.1
+
+Refactoring.
+
 ## v1.0.0
 
 master -> main, updated links
