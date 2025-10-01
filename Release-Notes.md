@@ -1,5 +1,9 @@
 # FarLite Release Notes
 
+## v1.0.3
+
+Packaging.
+
 ## v1.0.1
 
 Refactoring.

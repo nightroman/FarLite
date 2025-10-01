@@ -11,11 +11,11 @@ Requires Far Manager with [FarNet.PowerShellFar] and [Ldbc]
 
 ## How to start
 
-Install Ldbc and FarLite modules from the PowerShell gallery by these commands:
+Install Ldbc and get [FarLite](https://www.powershellgallery.com/packages/FarLite) modules from PSGallery:
 
 ```powershell
 Install-Module Ldbc
-Save-Module FarLite -Path $env:FARHOME\FarNet\Modules\PowerShellFar\Modules
+Save-Module FarLite -Path $env:FARPROFILE\FarNet\PowerShellFar\Modules
 ```
 
 You can use the usual `Install-Module FarLite` command, too.
