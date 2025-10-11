@@ -1,5 +1,11 @@
 # FarLite Release Notes
 
+## v1.0.4
+
+Use FarNet 9.0.44
+
+Remove `LeftAligned` from messages.
+
 ## v1.0.3
 
 Packaging.
